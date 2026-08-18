@@ -7,13 +7,17 @@ import { EmptyState } from "@/components/ui/empty-state"
 import { ChevronDown } from "lucide-react"
 import { ClientSearch } from "@/components/clients/client-search"
 import { ClientDeleteButton } from "@/components/clients/client-delete-button"
-
-const ORG_ID = 'demo-org-123';
+import { ClientCreateModal } from "@/components/clients/client-create-modal"
+import { createClient } from "@/utils/supabase/server"
 
 export default async function ClientsPage(props: { searchParams: Promise<{ q?: string, sort?: string }> }) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const orgId = user?.id || 'demo-org-123';
+
   const searchParams = await props.searchParams;
-  let clients = await clientsRepository.findAll(ORG_ID);
-  const invoices = await invoicesRepository.findAll(ORG_ID);
+  let clients = await clientsRepository.findAll(orgId);
+  const invoices = await invoicesRepository.findAll(orgId);
 
   const q = searchParams.q?.toLowerCase();
   if (q) {
@@ -30,10 +34,14 @@ export default async function ClientsPage(props: { searchParams: Promise<{ q?: s
     return invoices.filter(i => i.clientId === clientId).length;
   }
 
+  // Enlever le filtre strict qui masque les clients sans facture, sinon on ne verra pas le client créé !
+  // clients = clients.filter(c => getInvoiceCount(c.id) > 0);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Clients</h2>
+        <ClientCreateModal />
       </div>
       
       <div className="flex items-center justify-between py-4">
@@ -55,9 +63,9 @@ export default async function ClientsPage(props: { searchParams: Promise<{ q?: s
               {clients.map(client => (
                 <TableRow key={client.id} className="hover:bg-muted/50 group transition-colors duration-200">
                   <TableCell className="font-medium">
-                    <Link href={`/clients/${client.id}`} className="block w-full h-full text-primary hover:underline group-hover:text-primary/80">
+                    <span className="block w-full h-full font-semibold">
                       {client.name}
-                    </Link>
+                    </span>
                   </TableCell>
                   <TableCell>{client.phone || '-'}</TableCell>
                   <TableCell className="text-right">{getInvoiceCount(client.id)}</TableCell>
@@ -69,14 +77,7 @@ export default async function ClientsPage(props: { searchParams: Promise<{ q?: s
             </TableBody>
           </Table>
         </div>
-      ) : (
-        <EmptyState 
-           title="Aucun client trouvé" 
-           description="Vous n'avez pas encore de clients ou votre recherche n'a donné aucun résultat." 
-           actionLabel="Ajouter un client" 
-           actionHref="#"
-        />
-      )}
+      ) : null}
     </div>
   )
 }

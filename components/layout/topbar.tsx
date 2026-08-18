@@ -1,32 +1,43 @@
 'use client'
 
 import { useState } from 'react'
+import { Modal } from '@/components/ui/modal'
+import { Button } from '@/components/ui/button'
+import { logoutAction } from '@/actions/auth.actions'
 
-export function Topbar() {
-  const [isOpen, setIsOpen] = useState(false);
+export function Topbar({ user }: { user?: { fullName: string, email: string } }) {
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const confirmLogout = async () => {
+    await logoutAction()
+    window.location.href = '/login'
+  }
 
   return (
     <header className="flex h-16 items-center border-b bg-card px-6 relative">
       <div className="flex-1" />
       <div className="flex items-center gap-4 relative">
-        <button 
-           className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center font-bold text-primary hover:bg-primary/30 transition-colors"
-           onClick={() => setIsOpen(!isOpen)}
-        >
-           N
-        </button>
-        {isOpen && (
-           <div className="absolute top-10 right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border">
-              <div className="px-4 py-2 border-b">
-                 <p className="text-sm font-medium">Admin User</p>
-                 <p className="text-xs text-muted-foreground">admin@izifacture.com</p>
-              </div>
-              <button className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-muted" onClick={() => setIsOpen(false)}>
-                 Se déconnecter
-              </button>
-           </div>
-        )}
+        <div className="flex items-center gap-4 text-sm font-medium">
+          <button onClick={() => setShowLogoutModal(true)} className="text-red-600 hover:text-red-800 hover:underline transition-all">
+             Déconnexion
+          </button>
+        </div>
       </div>
+
+      <Modal isOpen={showLogoutModal} onClose={() => setShowLogoutModal(false)} className="max-w-md">
+        <div className="text-center space-y-4 py-4">
+          <h2 className="text-xl font-bold">Déconnexion</h2>
+          <p className="text-muted-foreground">Êtes-vous sûr de vouloir vous déconnecter ?</p>
+          <div className="flex items-center justify-center gap-4 mt-6">
+            <Button variant="outline" onClick={() => setShowLogoutModal(false)}>
+              Annuler
+            </Button>
+            <Button variant="destructive" onClick={confirmLogout}>
+              Oui, se déconnecter
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </header>
   )
 }

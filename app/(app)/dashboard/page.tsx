@@ -3,45 +3,32 @@ import { Button } from "@/components/ui/button"
 import { invoicesRepository } from "@/lib/data"
 import { formatFCFA } from "@/lib/domain/invoice-calculations"
 import Link from "next/link"
-import { RevenueChart } from "@/components/dashboard/revenue-chart"
 import { DashboardFilters } from "@/components/dashboard/dashboard-filters"
+import { RevenueChart } from "@/components/dashboard/revenue-chart"
+import { createClient } from "@/utils/supabase/server"
 import { Plus } from "lucide-react"
-
-const ORG_ID = 'demo-org-123';
 
 export default async function DashboardPage(props: { searchParams: Promise<{ startDate?: string, endDate?: string }> }) {
   const searchParams = await props.searchParams;
-  const stats = await invoicesRepository.getDashboardStats(ORG_ID, searchParams.startDate, searchParams.endDate);
   
-  // Logic to simulate dynamic chart data based on selected dates
-  let chartData: { label: string, total: number }[] = [];
-  let chartTitle = "Chiffre d'affaires (Aujourd'hui)";
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const orgId = user?.id || 'demo-org-123';
+  const fullName = user?.user_metadata?.full_name || 'Admin'
+
+  const stats = await invoicesRepository.getDashboardStats(orgId, searchParams.startDate, searchParams.endDate);
+  
+  let chartData = stats.revenueByMonth.map(m => ({ label: m.name, total: m.total }));
+  let chartTitle = "Chiffre d'affaires (6 derniers mois)";
 
   if (searchParams.startDate && searchParams.endDate) {
      chartTitle = `Chiffre d'affaires (Du ${searchParams.startDate} au ${searchParams.endDate})`;
-     // Generate some dummy data points to simulate the selected period (daily)
-     chartData = [
-       { label: 'Jour 1', total: Math.floor(Math.random() * 50000) + 10000 },
-       { label: 'Jour 2', total: Math.floor(Math.random() * 70000) + 20000 },
-       { label: 'Jour 3', total: Math.floor(Math.random() * 60000) + 15000 },
-       { label: 'Jour 4', total: Math.floor(Math.random() * 90000) + 30000 },
-       { label: 'Jour 5', total: Math.floor(Math.random() * 80000) + 25000 },
-     ];
-  } else {
-     // Default data: Today's hourly progression up to 16:00
-     chartData = [
-       { label: '08:00', total: 0 },
-       { label: '10:00', total: 15000 },
-       { label: '12:00', total: 45000 },
-       { label: '14:00', total: 60000 },
-       { label: '16:00', total: 85000 },
-     ];
   }
 
   return (
     <div className="space-y-6 pb-12">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Bonjour, Admin</h2>
+        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Hello, {fullName}</h2>
       </div>
       
       <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-3">

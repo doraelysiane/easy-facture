@@ -10,8 +10,9 @@ import { Button } from '@/components/ui/button'
 import { toast } from '@/components/ui/use-toast'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Plus, Trash2, Save, Send } from 'lucide-react'
+import { Plus, Trash2, Save, Send, CheckCircle } from 'lucide-react'
 import { InvoicePreview } from './invoice-preview'
+import { Modal } from '@/components/ui/modal'
 
 const MOCK_CLIENTS = [
   { id: 'c1', name: 'BlueHorizon Ltd.' },
@@ -27,7 +28,8 @@ interface InvoiceFormProps {
 export function InvoiceForm({ initialData, invoiceId, onSuccess }: InvoiceFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitAction, setSubmitAction] = useState<'draft' | 'sent'>('draft')
+  const [submitAction, setSubmitAction] = useState<'draft' | 'sent' | 'paid'>('sent')
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
   
   const form = useForm({
     resolver: zodResolver(invoiceSchema),
@@ -70,11 +72,25 @@ export function InvoiceForm({ initialData, invoiceId, onSuccess }: InvoiceFormPr
          onSuccess();
          router.refresh();
       } else {
-         router.push('/factures');
+         form.reset({
+           clientName: '',
+           clientPhone: '',
+           issueDate: new Date().toISOString().split('T')[0],
+           dueDate: new Date(Date.now() + 15 * 86400000).toISOString().split('T')[0],
+           vatRate: 18,
+           currency: 'XOF',
+           notes: '',
+           lines: [{ description: '', quantity: 1, unitPrice: 0 }]
+         });
+         setSubmitAction('sent');
+         setShowSuccessModal(true);
+         setTimeout(() => {
+            router.push('/factures');
+         }, 2000);
          router.refresh();
       }
     } else {
-      toast({ title: "Erreur", description: "Veuillez remplir tous les champs obligatoires.", variant: "destructive" })
+      toast({ title: "Erreur", description: (res as any).error || "Veuillez vérifier les informations.", variant: "destructive" })
     }
   }
 
@@ -155,23 +171,25 @@ export function InvoiceForm({ initialData, invoiceId, onSuccess }: InvoiceFormPr
             </div>
           </div>
       
-      <div className="flex justify-end pt-2 gap-2">
+      <div className="flex justify-end pt-2 gap-4 items-center">
+         <div className="flex items-center gap-2">
+           <label className="text-sm font-medium text-muted-foreground">Statut :</label>
+           <select 
+             className="h-9 w-[150px] rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+             value={submitAction}
+             onChange={(e) => setSubmitAction(e.target.value as any)}
+           >
+             <option value="draft">Brouillon</option>
+             <option value="sent">En attente (Envoyé)</option>
+             <option value="paid">Payée</option>
+           </select>
+         </div>
          <Button 
             type="submit" 
-            variant="secondary" 
             disabled={isSubmitting}
-            onClick={() => setSubmitAction('draft')}
          >
             <Save className="w-4 h-4 mr-2" />
-            Enregistrer comme brouillon
-         </Button>
-         <Button 
-            type="submit" 
-            disabled={isSubmitting}
-            onClick={() => setSubmitAction('sent')}
-         >
-            <Send className="w-4 h-4 mr-2" />
-            Enregistrer et envoyer
+            Créer
          </Button>
       </div>
     </form>
@@ -179,7 +197,7 @@ export function InvoiceForm({ initialData, invoiceId, onSuccess }: InvoiceFormPr
       
       <div className="flex flex-col md:sticky md:top-4 bg-slate-50/50 p-2 md:p-4 rounded-lg border items-center justify-start print:block print:p-0 print:border-none print:bg-transparent overflow-hidden max-h-[90vh] animate-fade-slide-up transition-all duration-300 hover:shadow-xl hover:bg-slate-100/50" style={{ opacity: 0, animationFillMode: 'forwards', animationDelay: '300ms' }}>
         <div className="w-full flex justify-end mb-2 print:hidden">
-           {form.watch('status') === 'paid' ? (
+           {submitAction === 'paid' ? (
              <Button type="button" variant="outline" size="sm" onClick={() => window.print()}>
                 Télécharger en PDF
              </Button>
@@ -190,9 +208,22 @@ export function InvoiceForm({ initialData, invoiceId, onSuccess }: InvoiceFormPr
            )}
         </div>
         <div className="w-full overflow-y-auto pb-4 origin-top" style={{ zoom: 0.85 }}>
-           <InvoicePreview data={form.watch()} />
+           <InvoicePreview data={{ ...form.watch(), status: submitAction }} />
         </div>
       </div>
+
+      <Modal isOpen={showSuccessModal} onClose={() => setShowSuccessModal(false)} className="max-w-md">
+        <div className="py-6 space-y-4 text-center">
+          <div className="w-16 h-16 rounded-full bg-green-100 text-green-600 flex items-center justify-center mx-auto mb-4">
+            <CheckCircle className="w-8 h-8" />
+          </div>
+          <h2 className="text-2xl font-bold text-slate-900">Succès !</h2>
+          <p className="text-slate-500">La facture a été créée avec succès.</p>
+          <Button className="mt-6 w-full" onClick={() => router.push('/factures')}>
+            Aller aux factures
+          </Button>
+        </div>
+      </Modal>
     </div>
   )
 }

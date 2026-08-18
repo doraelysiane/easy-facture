@@ -1,4 +1,5 @@
 import { invoicesRepository, clientsRepository } from "@/lib/data"
+import { createClient } from "@/utils/supabase/server"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { formatFCFA } from "@/lib/domain/invoice-calculations"
 import { Badge } from "@/components/ui/badge"
@@ -25,9 +26,13 @@ const getStatusLabel = (status: string) => {
 };
 
 export default async function FacturesPage(props: { searchParams: Promise<{ q?: string, status?: string, sort?: string }> }) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const orgId = user?.id || 'demo-org-123';
+
   const searchParams = await props.searchParams;
-  let rawInvoices = await invoicesRepository.findAll(ORG_ID);
-  const clients = await clientsRepository.findAll(ORG_ID);
+  let rawInvoices = await invoicesRepository.findAll(orgId);
+  const clients = await clientsRepository.findAll(orgId);
   
   // Sort clients alphabetically for the datalist
   const sortedClients = [...clients].sort((a, b) => a.name.localeCompare(b.name));

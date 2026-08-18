@@ -6,12 +6,11 @@ import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { registerAction, verifyEmailAction } from '@/actions/auth.actions'
-import { Mail, CheckCircle } from 'lucide-react'
+import { registerAction } from '@/actions/auth.actions'
+import { Mail } from 'lucide-react'
 
 export default function RegisterPage() {
-  const router = useRouter()
-  const [name, setName] = useState('')
+  const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   
@@ -24,7 +23,7 @@ export default function RegisterPage() {
     setError('')
     setIsSubmitting(true)
     
-    const res = await registerAction({ email, password, companyName: name })
+    const res = await registerAction({ email, password, fullName })
     setIsSubmitting(false)
     
     if (res.success) {
@@ -32,11 +31,6 @@ export default function RegisterPage() {
     } else {
       setError(res.error || "Une erreur est survenue")
     }
-  }
-
-  const handleSimulateVerification = async () => {
-    await verifyEmailAction(email)
-    router.push('/login')
   }
 
   if (needsVerification) {
@@ -57,15 +51,12 @@ export default function RegisterPage() {
             <p className="text-sm text-muted-foreground">
               Veuillez cliquer sur le lien dans cet e-mail pour activer votre compte. Vous ne pourrez pas vous connecter avant cette étape.
             </p>
-            
-            {/* Simulation pour la démo */}
-            <div className="mt-8 p-4 border rounded-lg bg-orange-50 border-orange-200 text-left">
-              <p className="text-xs text-orange-800 font-semibold mb-2">Mode Démonstration</p>
-              <p className="text-xs text-orange-700 mb-3">Puisque ceci est une démo sans vrai serveur d'e-mail, cliquez sur le bouton ci-dessous pour simuler le clic sur le lien de vérification.</p>
-              <Button onClick={handleSimulateVerification} variant="outline" className="w-full border-orange-300 text-orange-700 hover:bg-orange-100">
-                <CheckCircle className="w-4 h-4 mr-2" />
-                Simuler la vérification
-              </Button>
+            <div className="mt-8">
+              <Link href="/login">
+                <Button variant="outline" className="w-full">
+                  Aller à la page de connexion
+                </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>
@@ -91,12 +82,12 @@ export default function RegisterPage() {
           <CardContent>
             <form onSubmit={handleRegister} className="space-y-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Nom de l'entreprise</label>
+                <label className="text-sm font-medium">Prénom et Nom</label>
                 <Input 
                   type="text" 
-                  placeholder="Ex: Mon Entreprise SARL" 
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Ex: Jean Dupont" 
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
                   required
                 />
               </div>

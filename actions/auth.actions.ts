@@ -1,55 +1,83 @@
 'use server'
 
-import { localStore } from '@/lib/data/local/store'
+import { createClient } from '@/utils/supabase/server'
+import { revalidatePath } from 'next/cache'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 export async function registerAction(data: any) {
-  const { email, password, companyName } = data
-  
-  // Check if user exists
-  const existingUser = localStore.users.find(u => u.email === email)
-  if (existingUser) {
-    return { success: false, error: "Un compte avec cette adresse email existe déjà." }
-  }
+  const rateLimit = await checkRateLimit('register', 3, 3600000); // 3 requêtes par heure maximum
+  if (!rateLimit.success) return rateLimit;
 
-  // Create unverified user
-  const newUser = {
-    id: `u${Date.now()}`,
+  const { email, password, fullName } = data
+  const supabase = await createClient()
+  
+  const { error } = await supabase.auth.signUp({
     email,
-    password, // In a real app, hash this!
-    companyName,
-    isVerified: false
-  }
-  
-  localStore.users.push(newUser)
-  return { success: true }
-}
+    password,
+    options: {
+      data: {
+        full_name: fullName,
+      },
+    },
+  })
 
-export async function verifyEmailAction(email: string) {
-  const user = localStore.users.find(u => u.email === email)
-  if (!user) {
-    return { success: false, error: "Utilisateur non trouvé." }
+  if (error) {
+    return { success: false, error: error.message }
   }
 
-  user.isVerified = true
   return { success: true }
 }
 
 export async function loginAction(data: any) {
+  const rateLimit = await checkRateLimit('login', 5, 60000); // 5 tentatives par minute
+  if (!rateLimit.success) return rateLimit;
+
   const { email, password } = data
+  const supabase = await createClient()
   
-  const user = localStore.users.find(u => u.email === email)
-  
-  if (!user) {
-    return { success: false, error: "Adresse email ou mot de passe incorrect." }
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  })
+
+  if (error) {
+    return { success: false, error: "Adresse email ou mot de passe incorrect, ou email non vérifié." }
   }
 
-  if (user.password !== password) {
-    return { success: false, error: "Adresse email ou mot de passe incorrect." }
+  revalidatePath('/', 'layout')
+  return { success: true }
+}
+
+export async function logoutAction() {
+  const supabase = await createClient()
+  await supabase.auth.signOut()
+}
+
+export async function forgotPasswordAction(email: string) {
+  const rateLimit = await checkRateLimit('forgot_password', 3, 300000); // 3 demandes toutes les 5 minutes
+  if (!rateLimit.success) return rateLimit;
+
+  const supabase = await createClient()
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/confirm?next=/reset-password`,
+  })
+
+  if (error) {
+    return { success: false, error: error.message }
   }
 
-  if (!user.isVerified) {
-    return { success: false, error: "Veuillez vérifier votre adresse email avant de vous connecter." }
+  return { success: true }
+}
+
+export async function updatePasswordAction(password: string) {
+  const supabase = await createClient()
+  const { error } = await supabase.auth.updateUser({
+    password: password
+  })
+
+  if (error) {
+    return { success: false, error: error.message }
   }
 
-  return { success: true, user: { id: user.id, email: user.email, companyName: user.companyName } }
+  return { success: true }
 }

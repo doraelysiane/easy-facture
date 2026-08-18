@@ -42,62 +42,93 @@ export function InvoicePreview({ data }: { data: any }) {
   const total = subtotal + vatAmount;
 
   return (
-    <div className="relative bg-white p-6 rounded-sm shadow-xl border w-full min-h-[500px] flex flex-col justify-start print:w-full print:h-full print:border-none print:shadow-none print:p-0">
+    <div id="invoice-print-area" className="relative bg-white p-6 md:p-10 rounded-sm shadow-xl border w-full min-h-[500px] flex flex-col justify-start">
       
       {/* Macaron de statut */}
-      <div className={`absolute top-1/3 left-1/2 -translate-x-1/2 -rotate-[15deg] border-[6px] px-8 py-3 rounded-xl font-black text-5xl opacity-20 pointer-events-none print:opacity-40 z-10 tracking-widest uppercase ${getStatusColor(data.status)}`}>
+      <div className={`absolute top-1/3 left-1/2 -translate-x-1/2 -rotate-[15deg] border-[6px] px-8 py-3 rounded-xl font-black text-5xl opacity-10 pointer-events-none print:opacity-30 z-10 tracking-widest uppercase ${getStatusColor(data.status)}`}>
         {getStatusLabel(data.status)}
       </div>
+
       <style>{`
         @media print {
-          @page { margin: 0; }
-          body { padding: 2cm; }
+          @page { 
+            margin: 1cm; 
+            size: A4 portrait;
+          }
+          body {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            background: white !important;
+          }
+          body * {
+            visibility: hidden;
+          }
+          #invoice-print-area, #invoice-print-area * {
+            visibility: visible;
+          }
+          #invoice-print-area {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 1cm 2cm !important;
+            background: white !important;
+          }
         }
       `}</style>
+      
       <div>
-        <div className="flex justify-between items-start mb-6">
+        <div className="flex justify-between items-start mb-12">
           <div>
-            <h1 className="text-4xl font-bold text-primary mb-2">FACTURE</h1>
-            <p className="text-sm text-muted-foreground">{data.status === 'draft' || !data.status ? 'Brouillon' : data.invoiceNumber || 'Facture'}</p>
+            <h1 className="text-5xl font-black text-primary mb-2 tracking-tight">FACTURE</h1>
+            <p className="text-lg text-slate-500 font-medium">{data.status === 'draft' || !data.status ? 'Brouillon' : data.invoiceNumber || 'Facture'}</p>
           </div>
           <div className="text-right">
-            <h2 className="text-xl font-bold">{settings?.companyName || 'Izifacture'}</h2>
-            {settings?.phone && <p className="text-sm text-muted-foreground">{settings.phone}</p>}
-            {settings?.email && <p className="text-sm text-muted-foreground">{settings.email}</p>}
-            {settings?.address && <p className="text-sm text-muted-foreground">{settings.address}</p>}
+            <h2 className="text-2xl font-bold text-slate-900">{settings?.companyName || 'Izifacture'}</h2>
+            {settings?.phone && <p className="text-slate-600 mt-1">{settings.phone}</p>}
+            {settings?.email && <p className="text-slate-600">{settings.email}</p>}
+            {settings?.address && <p className="text-slate-600">{settings.address}</p>}
           </div>
         </div>
 
-        <div className="flex justify-between items-start mb-4">
+        <div className="flex justify-between items-start mb-10 bg-slate-50 p-6 rounded-lg print:bg-slate-50">
           <div>
-            <h2 className="text-xl font-semibold mb-1">À :</h2>
-            <p>{data.clientName || 'Nom du client'}</p>
-            <p className="text-muted-foreground">{data.clientPhone || 'Téléphone'}</p>
+            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Facturé à</h2>
+            <p className="text-xl font-bold text-slate-900">{data.clientName || 'Nom du client'}</p>
+            <p className="text-slate-600 mt-1">{data.clientPhone || 'Téléphone'}</p>
           </div>
-          <div className="text-right">
-            <p><span className="font-semibold">Date :</span> {data.issueDate}</p>
-            <p><span className="font-semibold">Échéance :</span> {data.dueDate}</p>
+          <div className="text-right space-y-2">
+            <div>
+              <p className="text-sm font-bold text-slate-400 uppercase tracking-wider">Date d'émission</p>
+              <p className="font-semibold text-slate-900">{data.issueDate}</p>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-slate-400 uppercase tracking-wider mt-3">Date d'échéance</p>
+              <p className="font-semibold text-slate-900">{data.dueDate}</p>
+            </div>
           </div>
         </div>
 
         <div className="flex-1">
-          <div className="mt-4 mb-4">
-            <table className="w-full">
+          <div className="mb-8">
+            <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b-2 border-primary/20">
-                  <th className="text-left py-2 font-semibold">Description</th>
-                  <th className="text-right py-2 font-semibold">Qté</th>
-                  <th className="text-right py-2 font-semibold">Prix Unit.</th>
-                  <th className="text-right py-2 font-semibold">Total</th>
+                <tr className="border-b-2 border-slate-800">
+                  <th className="py-3 px-2 font-bold text-slate-800">Description</th>
+                  <th className="text-center py-3 px-2 font-bold text-slate-800 w-24">Qté</th>
+                  <th className="text-right py-3 px-2 font-bold text-slate-800 w-32">Prix Unit.</th>
+                  <th className="text-right py-3 px-2 font-bold text-slate-800 w-32">Total</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="text-slate-700">
                 {data.lines?.map((line: any, i: number) => (
-                  <tr key={i} className="border-b last:border-0">
-                    <td className="py-2">{line.description || 'Description'}</td>
-                    <td className="text-right py-2">{line.quantity || 0}</td>
-                    <td className="text-right py-2">{formatFCFA(line.unitPrice || 0)}</td>
-                    <td className="text-right py-2">{formatFCFA((line.quantity || 0) * (line.unitPrice || 0))}</td>
+                  <tr key={i} className="border-b border-slate-200 last:border-b-0">
+                    <td className="py-4 px-2 font-medium">{line.description || 'Description'}</td>
+                    <td className="text-center py-4 px-2">{line.quantity || 0}</td>
+                    <td className="text-right py-4 px-2">{formatFCFA(line.unitPrice || 0)}</td>
+                    <td className="text-right py-4 px-2 font-semibold text-slate-900">{formatFCFA((line.quantity || 0) * (line.unitPrice || 0))}</td>
                   </tr>
                 ))}
               </tbody>
@@ -106,16 +137,16 @@ export function InvoicePreview({ data }: { data: any }) {
         </div>
       </div>
 
-      <div className="self-end w-64 space-y-2 mt-8">
-        <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">Sous-total</span>
-          <span>{formatFCFA(subtotal)}</span>
+      <div className="self-end w-80 space-y-3 mt-8 bg-slate-50 p-6 rounded-lg print:bg-slate-50">
+        <div className="flex justify-between text-slate-600">
+          <span>Sous-total</span>
+          <span className="font-medium">{formatFCFA(subtotal)}</span>
         </div>
-        <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">TVA ({data.vatRate || 18}%)</span>
-          <span>{formatFCFA(vatAmount)}</span>
+        <div className="flex justify-between text-slate-600">
+          <span>TVA ({data.vatRate || 18}%)</span>
+          <span className="font-medium">{formatFCFA(vatAmount)}</span>
         </div>
-        <div className="flex justify-between font-bold text-xl border-t-2 border-black pt-3">
+        <div className="flex justify-between font-black text-2xl border-t-2 border-slate-800 pt-4 mt-2 text-slate-900">
           <span>Total TTC</span>
           <span className="text-primary">{formatFCFA(total)}</span>
         </div>

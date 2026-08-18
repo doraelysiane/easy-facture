@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { Modal } from '@/components/ui/modal'
+import { logoutAction } from '@/actions/auth.actions'
 
 export default function ComptePage() {
   const router = useRouter()
@@ -13,6 +15,7 @@ export default function ComptePage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [showLogoutModal, setShowLogoutModal] = useState(false)
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault()
@@ -30,19 +33,35 @@ export default function ComptePage() {
     setSuccess("Informations du compte mises à jour avec succès.")
   }
 
-  const handleLogout = () => {
-    router.push('/login')
+  const confirmLogout = async () => {
+    await logoutAction()
+    window.location.href = '/login'
   }
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Mon compte</h2>
-        <Button variant="destructive" onClick={handleLogout} className="animate-fade-slide-up" style={{ animationDelay: '100ms' }}>
+        <Button variant="destructive" onClick={() => setShowLogoutModal(true)} className="animate-fade-slide-up" style={{ animationDelay: '100ms' }}>
           <LogOut className="w-4 h-4 mr-2" />
           Se déconnecter
         </Button>
       </div>
+
+      <Modal isOpen={showLogoutModal} onClose={() => setShowLogoutModal(false)} className="max-w-md">
+        <div className="text-center space-y-4 py-4">
+          <h2 className="text-xl font-bold">Déconnexion</h2>
+          <p className="text-muted-foreground">Êtes-vous sûr de vouloir vous déconnecter ?</p>
+          <div className="flex items-center justify-center gap-4 mt-6">
+            <Button variant="outline" onClick={() => setShowLogoutModal(false)}>
+              Annuler
+            </Button>
+            <Button variant="destructive" onClick={confirmLogout}>
+              Oui, se déconnecter
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
       <Card className="animate-fade-slide-up" style={{ animationDelay: '200ms', opacity: 0, animationFillMode: 'forwards' }}>
         <CardHeader>

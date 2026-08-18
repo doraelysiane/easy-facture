@@ -6,15 +6,25 @@ import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { loginAction } from '@/actions/auth.actions'
+import { loginAction, forgotPasswordAction } from '@/actions/auth.actions'
+import { Modal } from '@/components/ui/modal'
+import { CheckCircle } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   
+  // Login State
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
+
+  // Forgot Password State
+  const [showForgotModal, setShowForgotModal] = useState(false)
+  const [forgotEmail, setForgotEmail] = useState('')
+  const [isForgotSubmitting, setIsForgotSubmitting] = useState(false)
+  const [forgotError, setForgotError] = useState('')
+  const [forgotSent, setForgotSent] = useState(false)
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -61,9 +71,9 @@ export default function LoginPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-medium">Mot de passe</label>
-                  <Link href="#" className="text-xs text-primary hover:underline">
+                  <button type="button" onClick={() => setShowForgotModal(true)} className="text-xs text-primary hover:underline">
                     Mot de passe oublié ?
-                  </Link>
+                  </button>
                 </div>
                 <Input 
                   type="password" 
@@ -90,6 +100,72 @@ export default function LoginPage() {
           </Link>
         </p>
       </div>
+
+      <Modal isOpen={showForgotModal} onClose={() => setShowForgotModal(false)} className="max-w-md">
+        {!forgotSent ? (
+          <form onSubmit={async (e) => {
+            e.preventDefault()
+            setForgotError('')
+            setIsForgotSubmitting(true)
+            const res = await forgotPasswordAction(forgotEmail)
+            setIsForgotSubmitting(false)
+            if (res.success) {
+              setForgotSent(true)
+            } else {
+              setForgotError(res.error || "Une erreur est survenue")
+            }
+          }} className="space-y-6 py-2">
+            <div className="text-center space-y-2">
+              <h2 className="text-2xl font-bold">Mot de passe oublié</h2>
+              <p className="text-sm text-muted-foreground">
+                Entrez votre adresse e-mail pour recevoir un lien de réinitialisation.
+              </p>
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Adresse e-mail</label>
+              <Input 
+                type="email" 
+                placeholder="nom@entreprise.com" 
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+                required
+              />
+            </div>
+            {forgotError && <p className="text-sm text-destructive font-medium">{forgotError}</p>}
+            
+            <div className="flex justify-end gap-2 pt-4">
+              <Button type="button" variant="outline" onClick={() => setShowForgotModal(false)}>
+                Annuler
+              </Button>
+              <Button type="submit" disabled={isForgotSubmitting}>
+                {isForgotSubmitting ? "Envoi..." : "Envoyer le lien"}
+              </Button>
+            </div>
+          </form>
+        ) : (
+          <div className="text-center space-y-4 py-6">
+            <div className="mx-auto w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-4">
+              <CheckCircle className="w-6 h-6" />
+            </div>
+            <h2 className="text-2xl font-bold">E-mail envoyé</h2>
+            <p className="text-sm text-muted-foreground">
+              Nous avons envoyé un lien de réinitialisation à <br/>
+              <span className="font-semibold text-foreground">{forgotEmail}</span>
+            </p>
+            <p className="text-xs text-muted-foreground mt-4">
+              Veuillez vérifier votre boîte de réception (et vos spams) et cliquer sur le lien pour créer un nouveau mot de passe.
+            </p>
+            <Button className="mt-6 w-full" onClick={() => {
+              setShowForgotModal(false);
+              setForgotSent(false);
+              setForgotEmail('');
+            }}>
+              J'ai compris
+            </Button>
+          </div>
+        )}
+      </Modal>
     </div>
   )
 }

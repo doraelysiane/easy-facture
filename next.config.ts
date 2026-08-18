@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  devIndicators: false as any,
   env: {
     DATA_SOURCE: 'supabase',
     NEXT_PUBLIC_SUPABASE_URL: 'https://zucxcvifjwmrfkforzzh.supabase.co',

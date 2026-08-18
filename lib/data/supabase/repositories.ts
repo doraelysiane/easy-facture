@@ -1,10 +1,11 @@
 import { IClientsRepository, IInvoicesRepository, ISettingsRepository } from '../repository.interface';
 import { Client, Invoice, InvoiceLineItem, CompanySettings } from '../types';
-import { supabase } from '../../supabase/client';
 import { computeInvoiceTotals } from '../../domain/invoice-calculations';
+import { createClient } from '@/utils/supabase/server';
 
 export class SupabaseClientsRepository implements IClientsRepository {
   async findAll(orgId: string): Promise<Client[]> {
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from('clients')
       .select('*')
@@ -12,7 +13,6 @@ export class SupabaseClientsRepository implements IClientsRepository {
     
     if (error) throw error;
     
-    // Map snake_case to camelCase
     return (data || []).map(row => ({
       id: row.id,
       organizationId: row.organization_id,
@@ -25,6 +25,7 @@ export class SupabaseClientsRepository implements IClientsRepository {
   }
   
   async findById(orgId: string, id: string): Promise<Client | null> {
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from('clients')
       .select('*')
@@ -51,6 +52,7 @@ export class SupabaseClientsRepository implements IClientsRepository {
   async create(client: Omit<Client, 'id'>): Promise<Client> {
     const id = `c${Date.now()}`;
     const newClient = { ...client, id };
+    const supabase = await createClient();
     
     const { error } = await supabase
       .from('clients')
@@ -69,6 +71,7 @@ export class SupabaseClientsRepository implements IClientsRepository {
   }
   
   async delete(orgId: string, id: string): Promise<void> {
+    const supabase = await createClient();
     const { error } = await supabase
       .from('clients')
       .delete()
@@ -81,6 +84,7 @@ export class SupabaseClientsRepository implements IClientsRepository {
 
 export class SupabaseInvoicesRepository implements IInvoicesRepository {
   async findAll(orgId: string): Promise<Invoice[]> {
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from('invoices')
       .select('*')
@@ -107,6 +111,7 @@ export class SupabaseInvoicesRepository implements IInvoicesRepository {
   }
   
   async findById(orgId: string, id: string): Promise<{ invoice: Invoice; lines: InvoiceLineItem[] } | null> {
+    const supabase = await createClient();
     const { data: invoiceData, error: invoiceError } = await supabase
       .from('invoices')
       .select('*')
@@ -159,12 +164,14 @@ export class SupabaseInvoicesRepository implements IInvoicesRepository {
   
   async create(invoice: Omit<Invoice, 'id'>, lines: Omit<InvoiceLineItem, 'id' | 'invoiceId'>[]): Promise<{ invoice: Invoice; lines: InvoiceLineItem[] }> {
     const id = `inv${Date.now()}`;
-    const newInvoice: Invoice = { ...invoice, id };
+    const generatedInvoiceNumber = invoice.invoiceNumber || `INV-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}`;
+    const newInvoice: Invoice = { ...invoice, id, invoiceNumber: generatedInvoiceNumber };
     
     const { subtotal, vatAmount, total } = computeInvoiceTotals(lines, newInvoice.vatRate);
     newInvoice.subtotalAmount = subtotal;
     newInvoice.vatAmount = vatAmount;
     newInvoice.totalAmount = total;
+    const supabase = await createClient();
     
     const { error: invoiceError } = await supabase
       .from('invoices')
@@ -215,6 +222,7 @@ export class SupabaseInvoicesRepository implements IInvoicesRepository {
   }
   
   async updateStatus(orgId: string, id: string, status: Invoice['status']): Promise<Invoice> {
+    const supabase = await createClient();
     // First get existing
     const existing = await this.findById(orgId, id);
     if (!existing) throw new Error('Invoice not found');
@@ -242,6 +250,7 @@ export class SupabaseInvoicesRepository implements IInvoicesRepository {
   }
   
   async delete(orgId: string, id: string): Promise<void> {
+    const supabase = await createClient();
     const { error } = await supabase
       .from('invoices')
       .delete()
@@ -252,6 +261,7 @@ export class SupabaseInvoicesRepository implements IInvoicesRepository {
   }
   
   async getDashboardStats(orgId: string, startDate?: string, endDate?: string) {
+    const supabase = await createClient();
     let query = supabase.from('invoices').select('*').eq('organization_id', orgId);
     
     if (startDate && endDate) {
@@ -263,8 +273,49 @@ export class SupabaseInvoicesRepository implements IInvoicesRepository {
     
     const orgInvoices = data || [];
     
-    const months = ['Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août'];
-    const revenueByMonth = months.map(m => ({ name: m, total: Math.floor(Math.random() * 500000) + 100000 }));
+    const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+    let chartData: { name: string, total: number }[] = [];
+
+    if (startDate && endDate) {
+       const daysMap = new Map<string, number>();
+       
+       orgInvoices.forEach(inv => {
+          if (inv.status !== 'paid') return;
+          const d = inv.issue_date;
+          if (!daysMap.has(d)) daysMap.set(d, 0);
+          daysMap.set(d, daysMap.get(d)! + Number(inv.total_amount));
+       });
+
+       const sortedDates = Array.from(daysMap.keys()).sort();
+       chartData = sortedDates.map(date => {
+          const d = new Date(date);
+          return {
+             name: `${d.getDate()} ${monthNames[d.getMonth()]}`,
+             total: daysMap.get(date)!
+          };
+       });
+       
+       if (chartData.length === 0) {
+         chartData = [{ name: 'Aucune donnée', total: 0 }];
+       }
+    } else {
+       const last6Months: { name: string, total: number, month: number, year: number }[] = [];
+       for (let i = 5; i >= 0; i--) {
+           let d = new Date();
+           d.setMonth(d.getMonth() - i);
+           last6Months.push({ name: monthNames[d.getMonth()], total: 0, month: d.getMonth(), year: d.getFullYear() });
+       }
+
+       orgInvoices.forEach(inv => {
+          if (inv.status !== 'paid') return;
+          const invDate = new Date(inv.issue_date);
+          const monthItem = last6Months.find(m => m.month === invDate.getMonth() && m.year === invDate.getFullYear());
+          if (monthItem) {
+              monthItem.total += Number(inv.total_amount);
+          }
+       });
+       chartData = last6Months.map(m => ({ name: m.name, total: m.total }));
+    }
     
     return {
       totalInvoices: orgInvoices.length,
@@ -272,13 +323,14 @@ export class SupabaseInvoicesRepository implements IInvoicesRepository {
       paidAmount: orgInvoices.filter(i => i.status === 'paid').reduce((sum, inv) => sum + Number(inv.total_amount), 0),
       pendingAmount: orgInvoices.filter(i => i.status === 'sent').reduce((sum, inv) => sum + Number(inv.total_amount), 0),
       overdueAmount: orgInvoices.filter(i => i.status === 'overdue').reduce((sum, inv) => sum + Number(inv.total_amount), 0),
-      revenueByMonth,
+      revenueByMonth: chartData,
     };
   }
 }
 
 export class SupabaseSettingsRepository implements ISettingsRepository {
   async getSettings(orgId: string): Promise<CompanySettings | null> {
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from('settings')
       .select('*')
@@ -305,6 +357,7 @@ export class SupabaseSettingsRepository implements ISettingsRepository {
   }
 
   async updateSettings(orgId: string, settings: Partial<CompanySettings>): Promise<CompanySettings> {
+    const supabase = await createClient();
     const existing = await this.getSettings(orgId);
     
     const payload = {

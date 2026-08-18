@@ -8,13 +8,27 @@ import { InvoicePreview } from './invoice-preview'
 import { InvoiceForm } from './invoice-form'
 
 import { Trash2 } from 'lucide-react'
-import { deleteInvoiceAction } from '@/actions/invoices.actions'
+import { deleteInvoiceAction, getInvoiceLinesAction } from '@/actions/invoices.actions'
+import { useRouter } from 'next/navigation'
 
 export function InvoiceActions({ invoice }: { invoice: any }) {
   const [viewOpen, setViewOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [fullInvoice, setFullInvoice] = useState(invoice);
+  
+  const router = useRouter();
+
+  const handleFetchLinesAndOpen = async (setOpenState: (val: boolean) => void) => {
+    setOpenState(true);
+    if (!fullInvoice.lines) {
+      const res = await getInvoiceLinesAction(invoice.id);
+      if (res?.success) {
+        setFullInvoice({ ...invoice, lines: res.lines });
+      }
+    }
+  };
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -26,11 +40,11 @@ export function InvoiceActions({ invoice }: { invoice: any }) {
   return (
     <>
       <div className="flex justify-end gap-2 transition-opacity">
-        <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" onClick={() => setViewOpen(true)}>
+        <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" onClick={() => handleFetchLinesAndOpen(setViewOpen)}>
           <Eye className="h-5 w-5" />
         </Button>
         {invoice.status !== 'paid' && (
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-600" onClick={() => setEditOpen(true)}>
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-600" onClick={() => router.push(`/factures/${invoice.id}/modifier`)}>
             <Edit className="h-5 w-5" />
           </Button>
         )}
@@ -56,18 +70,7 @@ export function InvoiceActions({ invoice }: { invoice: any }) {
              </div>
            )}
         </div>
-        <InvoicePreview data={invoice} />
-      </Modal>
-
-      <Modal isOpen={editOpen} onClose={() => setEditOpen(false)} className="max-w-[90vw] lg:max-w-7xl">
-        <div className="mb-6 border-b pb-4">
-           <h2 className="text-3xl font-bold tracking-tight">Modifier la facture</h2>
-        </div>
-        <InvoiceForm 
-           initialData={invoice} 
-           invoiceId={invoice.id} 
-           onSuccess={() => setEditOpen(false)} 
-        />
+        <InvoicePreview data={fullInvoice} />
       </Modal>
 
       <Modal isOpen={deleteOpen} onClose={() => setDeleteOpen(false)} className="max-w-md h-auto p-2">

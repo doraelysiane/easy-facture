@@ -3,13 +3,17 @@
 import { revalidatePath } from 'next/cache'
 import { invoicesRepository } from '@/lib/data'
 import { Invoice } from '@/lib/data/types'
-
-const ORG_ID = 'demo-org-123';
+import { createClient } from '@/utils/supabase/server'
 
 export async function updateInvoiceStatusAction(invoiceId: string, status: Invoice['status']) {
   try {
-    await invoicesRepository.updateStatus(ORG_ID, invoiceId, status)
-    revalidatePath('/', 'layout') 
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Non autorisé");
+
+    await invoicesRepository.updateStatus(user.id, invoiceId, status)
+    revalidatePath('/factures')
+    revalidatePath('/dashboard')
     return { success: true }
   } catch (error) {
     console.error('Error updating status:', error)
