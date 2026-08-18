@@ -1,5 +1,6 @@
 import { IClientsRepository, IInvoicesRepository, ISettingsRepository } from './repository.interface';
 import { LocalClientsRepository, LocalInvoicesRepository, LocalSettingsRepository } from './local/repositories';
+import { SupabaseClientsRepository, SupabaseInvoicesRepository, SupabaseSettingsRepository } from './supabase/repositories';
 
 // DATA_SOURCE can be injected via env variables later
 const DATA_SOURCE = process.env.DATA_SOURCE || 'local';
@@ -13,8 +14,9 @@ if (DATA_SOURCE === 'local') {
   invoicesRepository = new LocalInvoicesRepository();
   settingsRepository = new LocalSettingsRepository();
 } else {
-  // Supabase implementations will go here
-  throw new Error('Supabase repository not yet implemented');
+  clientsRepository = new SupabaseClientsRepository();
+  invoicesRepository = new SupabaseInvoicesRepository();
+  settingsRepository = new SupabaseSettingsRepository();
 }
 
 export { clientsRepository, invoicesRepository, settingsRepository };
