@@ -68,7 +68,9 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
       <div className="w-full max-w-md space-y-8 animate-fade-slide-up" style={{ opacity: 0, animationFillMode: 'forwards' }}>
         <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold tracking-tight text-primary">Facto</h1>
+          <Link href="/">
+            <h1 className="text-4xl font-bold tracking-tight text-primary hover:opacity-80 transition-opacity">Facto</h1>
+          </Link>
           <p className="text-muted-foreground">Créez votre compte en quelques secondes.</p>
         </div>
 
