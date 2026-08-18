@@ -37,7 +37,7 @@ export function InvoiceStatusSelect({ invoiceId, initialStatus }: { invoiceId: s
         <option value="draft">Brouillon</option>
         <option value="sent">Envoyé</option>
         <option value="paid">Payé</option>
-        <option value="overdue">En attente</option>
+        <option value="overdue">En retard</option>
         <option value="cancelled">Annulée</option>
       </select>
       
@@ -46,7 +46,7 @@ export function InvoiceStatusSelect({ invoiceId, initialStatus }: { invoiceId: s
           {initialStatus === 'draft' && 'Brouillon'}
           {initialStatus === 'sent' && 'Envoyé'}
           {initialStatus === 'paid' && 'Payé'}
-          {initialStatus === 'overdue' && 'En attente'}
+          {initialStatus === 'overdue' && 'En retard'}
           {initialStatus === 'cancelled' && 'Annulée'}
         </span>
         {isPending ? (

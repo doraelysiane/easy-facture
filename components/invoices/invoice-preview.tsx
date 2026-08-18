@@ -9,7 +9,7 @@ const getStatusLabel = (status: string) => {
     draft: 'Brouillon',
     sent: 'Envoyée',
     paid: 'Payée',
-    overdue: 'En attente',
+    overdue: 'En retard',
     cancelled: 'Annulée'
   };
   return labels[status] || 'Brouillon';
@@ -60,21 +60,12 @@ export function InvoicePreview({ data }: { data: any }) {
             print-color-adjust: exact !important;
             background: white !important;
           }
-          body * {
-            visibility: hidden;
-          }
-          #invoice-print-area, #invoice-print-area * {
-            visibility: visible;
-          }
+          /* Remove visibility and absolute positioning hacks to fix the blank page issue */
           #invoice-print-area {
-            position: absolute !important;
-            left: 0 !important;
-            top: 0 !important;
-            width: 100% !important;
-            border: none !important;
             box-shadow: none !important;
-            padding: 1cm 2cm !important;
-            background: white !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
           }
         }
       `}</style>

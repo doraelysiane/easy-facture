@@ -18,15 +18,15 @@ export function Modal({ isOpen, onClose, children, className = '' }: { isOpen: b
   if (!mounted || !isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 sm:p-6 backdrop-blur-sm">
-      <div className={`relative w-full bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh] ${className}`}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 sm:p-6 backdrop-blur-sm print:bg-transparent print:absolute print:inset-auto print:block print:p-0">
+      <div className={`relative w-full bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh] print:max-h-none print:overflow-visible print:shadow-none print:rounded-none ${className}`}>
         <button 
            onClick={onClose}
            className="absolute top-4 right-4 z-50 p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full transition-colors print:hidden"
         >
           <X className="w-5 h-5" />
         </button>
-        <div className="flex-1 overflow-y-auto w-full h-full p-2 sm:p-6 print:p-0">
+        <div className="flex-1 overflow-y-auto w-full h-full p-2 sm:p-6 print:p-0 print:overflow-visible">
           {children}
         </div>
       </div>

@@ -94,9 +94,9 @@ export class LocalInvoicesRepository implements IInvoicesRepository {
     
     return {
       totalInvoices: orgInvoices.length,
-      totalAmount: orgInvoices.reduce((sum, inv) => sum + inv.totalAmount, 0),
+      totalAmount: orgInvoices.filter(i => i.status !== 'draft' && i.status !== 'cancelled').reduce((sum, inv) => sum + inv.totalAmount, 0),
       paidAmount: orgInvoices.filter(i => i.status === 'paid').reduce((sum, inv) => sum + inv.totalAmount, 0),
-      pendingAmount: orgInvoices.filter(i => i.status === 'sent').reduce((sum, inv) => sum + inv.totalAmount, 0),
+      pendingAmount: orgInvoices.filter(i => i.status === 'sent' || i.status === 'overdue').reduce((sum, inv) => sum + inv.totalAmount, 0),
       overdueAmount: orgInvoices.filter(i => i.status === 'overdue').reduce((sum, inv) => sum + inv.totalAmount, 0),
       revenueByMonth,
     };
