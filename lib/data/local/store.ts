@@ -6,7 +6,7 @@ export const localStore = {
   settings: [
     {
       organizationId: DEMO_ORG_ID,
-      legalName: 'Izifacture Demo',
+      legalName: 'Facto Demo',
       address: 'Abidjan, Côte d\'Ivoire',
       defaultVatRate: 18.00,
       currency: 'XOF',
@@ -15,9 +15,9 @@ export const localStore = {
   users: [
     {
       id: 'u-demo',
-      email: 'admin@izifacture.com',
+      email: 'admin@facto.com',
       password: 'admin',
-      companyName: 'Izifacture Demo',
+      companyName: 'Facto Demo',
       isVerified: true
     }
   ] as any[],

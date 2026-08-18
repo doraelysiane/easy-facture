@@ -40,7 +40,7 @@ export default function ResetPasswordPage() {
     <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
       <div className="w-full max-w-md space-y-8 animate-fade-slide-up" style={{ opacity: 0, animationFillMode: 'forwards' }}>
         <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold tracking-tight text-primary">Izifacture</h1>
+          <h1 className="text-4xl font-bold tracking-tight text-primary">Facto</h1>
         </div>
 
         <Card className="shadow-lg border-muted">

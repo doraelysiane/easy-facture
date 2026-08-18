@@ -11,7 +11,7 @@ import { logoutAction } from '@/actions/auth.actions'
 
 export default function ComptePage() {
   const router = useRouter()
-  const [email, setEmail] = useState('admin@izifacture.com')
+  const [email, setEmail] = useState('admin@facto.com')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -67,7 +67,7 @@ export default function ComptePage() {
         <CardHeader>
           <CardTitle>Informations de connexion</CardTitle>
           <CardDescription>
-            Modifiez votre adresse e-mail et votre mot de passe pour vous connecter à Izifacture.
+            Modifiez votre adresse e-mail et votre mot de passe pour vous connecter à Facto.
           </CardDescription>
         </CardHeader>
         <CardContent>

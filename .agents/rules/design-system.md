@@ -1,6 +1,6 @@
-# Izifacture Design System & Rules
+# Facto Design System & Rules
 
-This rule dictates the design, layout, responsiveness, and animation standards to follow throughout the creation and iteration of the Izifacture SaaS application.
+This rule dictates the design, layout, responsiveness, and animation standards to follow throughout the creation and iteration of the Facto SaaS application.
 
 ## 1. Responsiveness (Mobile & Desktop)
 - **Mobile-First Layout**: Always ensure pages are fully usable on mobile screens (`sm` breakpoints).

@@ -77,7 +77,7 @@ export function InvoicePreview({ data }: { data: any }) {
             <p className="text-lg text-slate-500 font-medium">{data.status === 'draft' || !data.status ? 'Brouillon' : data.invoiceNumber || 'Facture'}</p>
           </div>
           <div className="text-right">
-            <h2 className="text-2xl font-bold text-slate-900">{settings?.companyName || 'Izifacture'}</h2>
+            <h2 className="text-2xl font-bold text-slate-900">{settings?.companyName || 'Facto'}</h2>
             {settings?.phone && <p className="text-slate-600 mt-1">{settings.phone}</p>}
             {settings?.email && <p className="text-slate-600">{settings.email}</p>}
             {settings?.address && <p className="text-slate-600">{settings.address}</p>}

@@ -72,12 +72,12 @@ export function ParametresForm({ settings }: { settings: CompanySettings | null 
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Nom de l'entreprise</label>
-                  <Input name="companyName" defaultValue={settings?.companyName || "Izifacture Demo"} required />
+                  <Input name="companyName" defaultValue={settings?.companyName || "Facto Demo"} required />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Email professionnel</label>
-                    <Input type="email" name="email" defaultValue={settings?.email || "contact@izifacture.com"} />
+                    <Input type="email" name="email" defaultValue={settings?.email || "contact@facto.com"} />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Téléphone</label>

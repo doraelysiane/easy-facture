@@ -55,7 +55,7 @@ export function Sidebar({ mobile }: { mobile?: boolean }) {
   return (
     <div className="flex h-full w-64 flex-col border-r bg-card">
       <div className="p-6 pb-8">
-        <h1 className="text-2xl font-bold text-primary">Izifacture</h1>
+        <h1 className="text-2xl font-bold text-primary">Facto</h1>
       </div>
       <nav className="flex-1 space-y-3 px-4 flex flex-col overflow-y-auto pb-4">
         <div>

@@ -68,7 +68,7 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
       <div className="w-full max-w-md space-y-8 animate-fade-slide-up" style={{ opacity: 0, animationFillMode: 'forwards' }}>
         <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold tracking-tight text-primary">Izifacture</h1>
+          <h1 className="text-4xl font-bold tracking-tight text-primary">Facto</h1>
           <p className="text-muted-foreground">Créez votre compte en quelques secondes.</p>
         </div>
 
@@ -76,7 +76,7 @@ export default function RegisterPage() {
           <CardHeader>
             <CardTitle className="text-2xl">Inscription</CardTitle>
             <CardDescription>
-              Remplissez le formulaire ci-dessous pour démarrer avec Izifacture.
+              Remplissez le formulaire ci-dessous pour démarrer avec Facto.
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -13,7 +13,7 @@ export default function AidePage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BookOpen className="w-5 h-5 text-primary" />
-              Comment utiliser Izifacture
+              Comment utiliser Facto
             </CardTitle>
             <CardDescription>
               Voici les étapes principales pour bien démarrer.
@@ -55,8 +55,8 @@ export default function AidePage() {
             <p className="text-sm text-muted-foreground mb-4">
               Si vous avez des questions ou si vous rencontrez un problème technique, n'hésitez pas à nous envoyer un e-mail à :
             </p>
-            <a href="mailto:support@izifacture.com" className="font-semibold text-primary hover:underline">
-              support@izifacture.com
+            <a href="mailto:support@facto.com" className="font-semibold text-primary hover:underline">
+              support@facto.com
             </a>
           </CardContent>
         </Card>

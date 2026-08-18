@@ -1,12 +1,12 @@
-# Izifacture - Documentation & Contexte du Projet
+# Facto - Documentation & Contexte du Projet
 
 ## 📌 Ce que l'application fait
-**Izifacture** est une application web de facturation simplifiée destinée aux petites et moyennes entreprises, particulièrement adaptée au marché francophone et ouest-africain (support des devises XOF/XAF). Elle permet de gérer des clients, de générer des factures professionnelles, de suivre le chiffre d'affaires et de télécharger les factures en PDF, le tout via une interface premium et ultra-rapide.
+**Facto** est une application web de facturation simplifiée destinée aux petites et moyennes entreprises, particulièrement adaptée au marché francophone et ouest-africain (support des devises XOF/XAF). Elle permet de gérer des clients, de générer des factures professionnelles, de suivre le chiffre d'affaires et de télécharger les factures en PDF, le tout via une interface premium et ultra-rapide.
 
 ## ✨ Fonctionnalités Implémentées
 1. **Authentification** : 
    - Système de connexion et d'inscription (actuellement simulé).
-   - Un compte administrateur permanent par défaut (`admin@izifacture.com` / `admin`).
+   - Un compte administrateur permanent par défaut (`admin@facto.com` / `admin`).
 2. **Tableau de Bord (Dashboard)** : 
    - Indicateurs clés (Total facturé, En attente, Payé, En retard).
    - Graphique d'évolution des revenus (Recharts).
