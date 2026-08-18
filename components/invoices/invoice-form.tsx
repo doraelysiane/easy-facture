@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { invoiceSchema } from '@/lib/validation/invoice.schema'
 import { createInvoiceFromJson, updateInvoiceFromJson } from '@/actions/invoices.actions'
 import { Button } from '@/components/ui/button'
+import { toast } from '@/components/ui/use-toast'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Plus, Trash2, Save, Send } from 'lucide-react'
@@ -73,8 +74,7 @@ export function InvoiceForm({ initialData, invoiceId, onSuccess }: InvoiceFormPr
          router.refresh();
       }
     } else {
-      console.error(res.errors)
-      alert("Erreur de validation")
+      toast({ title: "Erreur", description: "Veuillez remplir tous les champs obligatoires.", variant: "destructive" })
     }
   }
 

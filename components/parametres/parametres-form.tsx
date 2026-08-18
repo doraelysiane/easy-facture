@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Building2, CreditCard, Loader2 } from "lucide-react"
 import { CompanySettings } from '@/lib/data/types'
 import { updateSettingsAction } from '@/lib/actions/settings.actions'
+import { toast } from '@/components/ui/use-toast'
 
 export function ParametresForm({ settings }: { settings: CompanySettings | null }) {
   const [activeTab, setActiveTab] = useState<'profil' | 'facturation'>('profil')
@@ -23,7 +24,7 @@ export function ParametresForm({ settings }: { settings: CompanySettings | null 
         address: formData.get('address') as string,
         taxId: formData.get('taxId') as string,
       })
-      alert("Profil mis à jour avec succès !")
+      toast({ title: "Succès", description: "Profil mis à jour avec succès !" })
     })
   }
 
@@ -35,7 +36,7 @@ export function ParametresForm({ settings }: { settings: CompanySettings | null 
         defaultCurrency: formData.get('defaultCurrency') as string,
         defaultVatRate: Number(formData.get('defaultVatRate')),
       })
-      alert("Préférences mises à jour avec succès !")
+      toast({ title: "Succès", description: "Préférences mises à jour avec succès !" })
     })
   }
 
