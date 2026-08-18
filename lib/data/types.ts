@@ -8,11 +8,15 @@ export interface Organization {
 
 export interface CompanySettings {
   organizationId: string;
-  legalName: string;
+  companyName?: string;
+  legalName?: string;
+  email?: string;
+  phone?: string;
   address: string;
   taxId?: string;
   defaultVatRate: number;
-  currency: string;
+  currency?: string;
+  defaultCurrency?: string;
 }
 
 export interface Client {

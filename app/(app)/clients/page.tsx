@@ -37,7 +37,7 @@ export default async function ClientsPage(props: { searchParams: Promise<{ q?: s
       </div>
       
       <div className="flex items-center justify-between py-4">
-        <ClientSearch initialValue={searchParams.q} phoneNumbers={Array.from(new Set(clients.map(c => c.phone).filter(Boolean)))} />
+        <ClientSearch initialValue={searchParams.q} phoneNumbers={Array.from(new Set(clients.map(c => c.phone).filter((p): p is string => Boolean(p))))} />
       </div>
 
       {clients.length > 0 ? (

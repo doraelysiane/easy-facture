@@ -48,11 +48,10 @@ export const localStore = {
       issueDate: '2026-08-10',
       dueDate: '2026-08-25',
       status: 'paid',
-      subtotal: 169000,
-      taxAmount: 0,
+      subtotalAmount: 169000,
+      vatAmount: 0,
       totalAmount: 169000,
-      notes: 'Merci pour votre confiance.',
-      lines: []
+      notes: 'Merci pour votre confiance.'
     },
     {
       id: 'inv-2',
@@ -62,11 +61,10 @@ export const localStore = {
       issueDate: '2026-08-15',
       dueDate: '2026-08-30',
       status: 'sent',
-      subtotal: 95000,
-      taxAmount: 0,
+      subtotalAmount: 95000,
+      vatAmount: 0,
       totalAmount: 95000,
-      notes: 'Paiement à réception.',
-      lines: []
+      notes: 'Paiement à réception.'
     },
     {
       id: 'inv-3',
@@ -76,11 +74,10 @@ export const localStore = {
       issueDate: '2026-07-01',
       dueDate: '2026-07-15',
       status: 'sent', // Sera calculé comme "en retard" car la date d'échéance est passée
-      subtotal: 45000,
-      taxAmount: 0,
+      subtotalAmount: 45000,
+      vatAmount: 0,
       totalAmount: 45000,
-      notes: 'Facture en retard.',
-      lines: []
+      notes: 'Facture en retard.'
     },
     {
       id: 'inv-4',
@@ -90,11 +87,10 @@ export const localStore = {
       issueDate: '2026-08-17',
       dueDate: '2026-08-31',
       status: 'draft',
-      subtotal: 120000,
-      taxAmount: 0,
+      subtotalAmount: 120000,
+      vatAmount: 0,
       totalAmount: 120000,
-      notes: 'Brouillon en cours.',
-      lines: []
+      notes: 'Brouillon en cours.'
     }
   ] as Invoice[],
   invoiceLines: [

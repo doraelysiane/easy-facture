@@ -51,7 +51,7 @@ export function InvoiceForm({ initialData, invoiceId, onSuccess }: InvoiceFormPr
   const watchLines = form.watch('lines')
   const vatRate = form.watch('vatRate')
   
-  const subtotal = watchLines.reduce((sum, line) => sum + ((line.quantity || 0) * (line.unitPrice || 0)), 0)
+  const subtotal = watchLines.reduce((sum: number, line: any) => sum + ((line.quantity || 0) * (line.unitPrice || 0)), 0)
   const vatAmount = Math.round(subtotal * (vatRate / 100))
   const total = subtotal + vatAmount
 
