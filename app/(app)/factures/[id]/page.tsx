@@ -44,6 +44,5 @@ export default async function InvoiceDetailPage({ params }: { params: { id: stri
             notes: data.invoice.notes
          }} />
       </div>
-    </div>
   )
 }
