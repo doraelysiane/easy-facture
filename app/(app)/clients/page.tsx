@@ -49,34 +49,55 @@ export default async function ClientsPage(props: { searchParams: Promise<{ q?: s
       </div>
 
       {clients.length > 0 ? (
-        <div className="rounded-md border bg-card overflow-hidden overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nom</TableHead>
-                <TableHead>Numéro</TableHead>
-                <TableHead className="text-right">Factures</TableHead>
-                <TableHead className="w-[60px]"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {clients.map(client => (
-                <TableRow key={client.id} className="hover:bg-muted/50 group transition-colors duration-200">
-                  <TableCell className="font-medium">
-                    <span className="block w-full h-full font-semibold">
-                      {client.name}
-                    </span>
-                  </TableCell>
-                  <TableCell>{client.phone || '-'}</TableCell>
-                  <TableCell className="text-right">{getInvoiceCount(client.id)}</TableCell>
-                  <TableCell className="text-right w-[60px]">
-                     <ClientDeleteButton id={client.id} clientName={client.name} />
-                  </TableCell>
+        <>
+          {/* Mobile View */}
+          <div className="grid grid-cols-1 gap-4 md:hidden">
+            {clients.map(client => (
+              <div key={client.id} className="bg-card border rounded-lg p-4 shadow-sm flex flex-col gap-2">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-semibold text-base">{client.name}</h3>
+                    <p className="text-sm text-muted-foreground">{client.phone || '-'}</p>
+                  </div>
+                  <ClientDeleteButton id={client.id} clientName={client.name} />
+                </div>
+                <div className="text-sm text-muted-foreground mt-2">
+                  Factures : <span className="font-medium text-foreground">{getInvoiceCount(client.id)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop View */}
+          <div className="hidden md:block rounded-md border bg-card overflow-hidden overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nom</TableHead>
+                  <TableHead>Numéro</TableHead>
+                  <TableHead className="text-right">Factures</TableHead>
+                  <TableHead className="w-[60px]"></TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              </TableHeader>
+              <TableBody>
+                {clients.map(client => (
+                  <TableRow key={client.id} className="hover:bg-muted/50 group transition-colors duration-200">
+                    <TableCell className="font-medium">
+                      <span className="block w-full h-full font-semibold">
+                        {client.name}
+                      </span>
+                    </TableCell>
+                    <TableCell>{client.phone || '-'}</TableCell>
+                    <TableCell className="text-right">{getInvoiceCount(client.id)}</TableCell>
+                    <TableCell className="text-right w-[60px]">
+                       <ClientDeleteButton id={client.id} clientName={client.name} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </>
       ) : null}
     </div>
   )

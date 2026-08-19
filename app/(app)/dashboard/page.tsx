@@ -31,7 +31,7 @@ export default async function DashboardPage(props: { searchParams: Promise<{ sta
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Hello, {fullName}</h2>
       </div>
       
-      <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <Card className="shadow-md border-muted transition-all duration-300 hover:shadow-lg hover:-translate-y-1 animate-fade-slide-up" style={{ opacity: 0, animationFillMode: 'forwards', animationDelay: '100ms' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Chiffre d'affaires</CardTitle>

@@ -130,22 +130,27 @@ export function InvoiceForm({ initialData, invoiceId, onSuccess }: InvoiceFormPr
             <CardHeader className="py-3"><CardTitle className="text-lg">Lignes de facturation</CardTitle></CardHeader>
             <CardContent className="space-y-2 pb-4">
               {fields.map((field, index) => (
-                <div key={field.id} className="flex gap-2 items-start">
-                  <div className="flex-1 space-y-1">
-                    <Input placeholder="Description du service..." className="h-8 text-sm" {...form.register(`lines.${index}.description` as const)} />
+                <div key={field.id} className="flex flex-col md:flex-row gap-2 items-start border-b md:border-none pb-3 md:pb-0 mb-3 md:mb-0 last:border-none last:mb-0">
+                  <div className="w-full md:flex-1 space-y-1">
+                    <label className="text-[10px] font-semibold text-muted-foreground md:hidden uppercase tracking-wider">Description</label>
+                    <Input placeholder="Description du service..." className="h-8 text-sm w-full" {...form.register(`lines.${index}.description` as const)} />
                   </div>
-                  <div className="w-16 space-y-1">
-                    <Input type="number" placeholder="Qté" className="h-8 text-sm px-2" {...form.register(`lines.${index}.quantity` as const, { valueAsNumber: true })} />
+                  <div className="flex items-end gap-2 w-full md:w-auto justify-between">
+                    <div className="w-20 space-y-1">
+                      <label className="text-[10px] font-semibold text-muted-foreground md:hidden uppercase tracking-wider">Qté</label>
+                      <Input type="number" placeholder="Qté" className="h-8 text-sm px-2 w-full" {...form.register(`lines.${index}.quantity` as const, { valueAsNumber: true })} />
+                    </div>
+                    <div className="w-32 space-y-1">
+                      <label className="text-[10px] font-semibold text-muted-foreground md:hidden uppercase tracking-wider">Prix U.</label>
+                      <Input type="number" placeholder="Prix" className="h-8 text-sm px-2 w-full" {...form.register(`lines.${index}.unitPrice` as const, { valueAsNumber: true })} />
+                    </div>
+                    <div className="flex-1 md:w-24 py-1.5 text-right font-medium text-sm">
+                      {((watchLines[index]?.quantity || 0) * (watchLines[index]?.unitPrice || 0)).toLocaleString()}
+                    </div>
+                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8 shrink-0 mb-[2px]" onClick={() => remove(index)}>
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
                   </div>
-                  <div className="w-24 space-y-1">
-                    <Input type="number" placeholder="Prix" className="h-8 text-sm px-2" {...form.register(`lines.${index}.unitPrice` as const, { valueAsNumber: true })} />
-                  </div>
-                  <div className="w-24 py-1.5 text-right font-medium text-sm">
-                    {((watchLines[index]?.quantity || 0) * (watchLines[index]?.unitPrice || 0)).toLocaleString()}
-                  </div>
-                  <Button type="button" variant="ghost" size="icon" className="h-8 w-8 mt-0 shrink-0" onClick={() => remove(index)}>
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                  </Button>
                 </div>
               ))}
               <Button type="button" variant="outline" size="sm" className="mt-2 h-8 text-xs" onClick={() => append({ description: '', quantity: 1, unitPrice: 0 })}>

@@ -6,7 +6,7 @@ import { LayoutDashboard, Users, FileText, Settings, Plus, HelpCircle, User } fr
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
-export function Sidebar({ mobile }: { mobile?: boolean }) {
+export function Sidebar({ className, onNavigate }: { className?: string, onNavigate?: () => void }) {
   const pathname = usePathname()
 
   const allLinks = [
@@ -19,41 +19,10 @@ export function Sidebar({ mobile }: { mobile?: boolean }) {
     { href: '/compte', label: 'Mon compte', icon: User },
   ]
 
-  if (mobile) {
-    return (
-      <nav className="flex items-center justify-start overflow-x-auto hide-scrollbar gap-4 h-full px-4 w-full">
-        {allLinks.map((link) => {
-          let isActive = false;
-          if (link.href === '/factures') {
-             isActive = pathname === '/factures' || (pathname.startsWith('/factures/') && !pathname.includes('nouvelle'));
-          } else if (link.href === '/dashboard') {
-             isActive = pathname === '/dashboard';
-          } else {
-             isActive = pathname.startsWith(link.href);
-          }
-          const Icon = link.icon
-          return (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-all shrink-0 min-w-[60px]",
-                isActive 
-                  ? "text-black" 
-                  : "text-slate-400 hover:text-black"
-              )}
-            >
-              <Icon className="h-5 w-5" />
-              <span className="text-[10px] font-medium">{link.label}</span>
-            </Link>
-          )
-        })}
-      </nav>
-    )
-  }
+  // Removed old mobile logic
 
   return (
-    <div className="flex h-full w-64 flex-col border-r bg-card">
+    <div className={cn("flex h-full w-64 flex-col border-r bg-card", className)}>
       <div className="p-6 pb-8">
         <h1 className="text-2xl font-bold text-primary">Facto</h1>
       </div>
@@ -73,6 +42,7 @@ export function Sidebar({ mobile }: { mobile?: boolean }) {
               <Link
                 key={link.href}
                 href={link.href}
+                onClick={() => onNavigate && onNavigate()}
                 className={cn(
                   "flex items-center gap-4 rounded-xl px-4 py-3 text-sm font-semibold transition-all mb-3",
                   isActive 

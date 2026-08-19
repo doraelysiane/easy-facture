@@ -132,48 +132,77 @@ export default async function FacturesPage(props: { searchParams: Promise<{ q?: 
       </div>
 
       {invoices.length > 0 ? (
-        <div className="rounded-md border bg-card overflow-hidden overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Numéro</TableHead>
-                <TableHead>Client</TableHead>
-                <TableHead>
-                   <Link href={`?q=${q||''}&status=${statusFilter||'all'}&sort=${sort === 'date_desc' ? 'date_asc' : 'date_desc'}`} className="hover:text-foreground">
-                      Date {sort === 'date_desc' ? '↓' : sort === 'date_asc' ? '↑' : ''}
-                   </Link>
-                </TableHead>
-                <TableHead>
-                   <Link href={`?q=${q||''}&status=${statusFilter||'all'}&sort=${sort === 'amount_desc' ? 'amount_asc' : 'amount_desc'}`} className="hover:text-foreground">
-                      Montant {sort === 'amount_desc' ? '↓' : sort === 'amount_asc' ? '↑' : ''}
-                   </Link>
-                </TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {invoices.map(inv => (
-                <TableRow key={inv.id} className="hover:bg-muted/50 group transition-colors duration-200">
-                  <TableCell className="font-medium">
-                     <Link href={`/factures/${inv.id}`} className="hover:underline text-primary">
-                        {inv.invoiceNumber || 'Brouillon'}
-                     </Link>
-                  </TableCell>
-                  <TableCell>{getClientName(inv.clientId)}</TableCell>
-                  <TableCell>{inv.issueDate}</TableCell>
-                  <TableCell>{formatFCFA(inv.totalAmount)}</TableCell>
-                  <TableCell>
+        <>
+          {/* Mobile View */}
+          <div className="grid grid-cols-1 gap-4 md:hidden">
+            {invoices.map(inv => (
+              <div key={inv.id} className="bg-card border rounded-lg p-4 shadow-sm flex flex-col gap-3">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <Link href={`/factures/${inv.id}`} className="hover:underline text-primary font-semibold text-base">
+                      {inv.invoiceNumber || 'Brouillon'}
+                    </Link>
+                    <p className="text-sm text-muted-foreground">{getClientName(inv.clientId)}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-foreground">{formatFCFA(inv.totalAmount)}</p>
+                    <p className="text-xs text-muted-foreground">{inv.issueDate}</p>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center pt-3 mt-1 border-t border-border">
+                  <div className="w-[140px]">
                     <InvoiceStatusSelect invoiceId={inv.id} initialStatus={inv.status as any} />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <InvoiceActions invoice={inv} />
-                  </TableCell>
+                  </div>
+                  <InvoiceActions invoice={inv} />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop View */}
+          <div className="hidden md:block rounded-md border bg-card overflow-hidden overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Numéro</TableHead>
+                  <TableHead>Client</TableHead>
+                  <TableHead>
+                     <Link href={`?q=${q||''}&status=${statusFilter||'all'}&sort=${sort === 'date_desc' ? 'date_asc' : 'date_desc'}`} className="hover:text-foreground">
+                        Date {sort === 'date_desc' ? '↓' : sort === 'date_asc' ? '↑' : ''}
+                     </Link>
+                  </TableHead>
+                  <TableHead>
+                     <Link href={`?q=${q||''}&status=${statusFilter||'all'}&sort=${sort === 'amount_desc' ? 'amount_asc' : 'amount_desc'}`} className="hover:text-foreground">
+                        Montant {sort === 'amount_desc' ? '↓' : sort === 'amount_asc' ? '↑' : ''}
+                     </Link>
+                  </TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              </TableHeader>
+              <TableBody>
+                {invoices.map(inv => (
+                  <TableRow key={inv.id} className="hover:bg-muted/50 group transition-colors duration-200">
+                    <TableCell className="font-medium">
+                       <Link href={`/factures/${inv.id}`} className="hover:underline text-primary">
+                          {inv.invoiceNumber || 'Brouillon'}
+                       </Link>
+                    </TableCell>
+                    <TableCell>{getClientName(inv.clientId)}</TableCell>
+                    <TableCell>{inv.issueDate}</TableCell>
+                    <TableCell>{formatFCFA(inv.totalAmount)}</TableCell>
+                    <TableCell>
+                      <InvoiceStatusSelect invoiceId={inv.id} initialStatus={inv.status as any} />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <InvoiceActions invoice={inv} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </>
       ) : (
         <EmptyState 
            title="Aucune facture" 
