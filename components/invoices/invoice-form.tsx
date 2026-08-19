@@ -200,7 +200,7 @@ export function InvoiceForm({ initialData, invoiceId, onSuccess }: InvoiceFormPr
     </form>
   </div>
       
-      <div className="flex flex-col md:sticky md:top-4 bg-slate-50/50 p-2 md:p-4 rounded-lg border items-center justify-start print:block print:p-0 print:border-none print:bg-transparent overflow-hidden max-h-[90vh] animate-fade-slide-up transition-all duration-300 hover:shadow-xl hover:bg-slate-100/50" style={{ opacity: 0, animationFillMode: 'forwards', animationDelay: '300ms' }}>
+      <div className="flex flex-col md:sticky md:top-4 bg-slate-50/50 p-2 md:p-4 rounded-lg border items-center justify-start print:block print:p-0 print:border-none print:bg-transparent overflow-hidden print:overflow-visible max-h-[90vh] print:max-h-none animate-fade-slide-up transition-all duration-300 hover:shadow-xl hover:bg-slate-100/50 print:[opacity:1_!important] print:[transform:none_!important]" style={{ opacity: 0, animationFillMode: 'forwards', animationDelay: '300ms' }}>
         <div className="w-full flex justify-end mb-2 print:hidden">
            {submitAction === 'paid' ? (
              <Button type="button" variant="outline" size="sm" onClick={() => window.print()}>
@@ -212,7 +212,7 @@ export function InvoiceForm({ initialData, invoiceId, onSuccess }: InvoiceFormPr
              </div>
            )}
         </div>
-        <div className="w-full overflow-y-auto pb-4 origin-top" style={{ zoom: 0.85 }}>
+        <div className="w-full overflow-y-auto print:overflow-visible pb-4 origin-top" style={{ zoom: 0.85 }}>
            <InvoicePreview data={{ ...form.watch(), status: submitAction }} />
         </div>
       </div>

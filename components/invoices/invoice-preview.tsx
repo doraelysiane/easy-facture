@@ -142,6 +142,13 @@ export function InvoicePreview({ data }: { data: any }) {
           <span className="text-primary">{formatFCFA(total)}</span>
         </div>
       </div>
+
+      {data.notes && (
+        <div className="mt-12 pt-6 border-t text-sm text-slate-600 w-full">
+          <p className="font-bold mb-1 text-slate-900">Notes:</p>
+          <p className="whitespace-pre-wrap">{data.notes}</p>
+        </div>
+      )}
     </div>
   )
 }
